@@ -1,0 +1,14 @@
+# ZK build artifacts — large, regenerable via setup/ceremony.sh + export-fixtures.sh
+build/
+*.ptau
+*.zkey
+*.wtns
+*.r1cs
+
+# Node
+node_modules/
+
+# Rust
+target/
+
+# Keep (real test vectors, small): fixtures/**/*.json, circuits/**, setup/**

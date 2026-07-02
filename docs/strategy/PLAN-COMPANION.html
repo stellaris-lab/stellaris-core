@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stellaris — ZK Proof-of-Reserves | Stellar Hacks ZK Plan</title>
+<meta name="artifact-version" content="1.0">
+<meta name="artifact-generated" content="2026-06-22">
+<style>
+  :root{
+    --bg:#0b0f17; --panel:#131a26; --panel2:#0f1622; --ink:#e6edf6;
+    --mut:#9fb0c6; --line:#243247; --acc:#3fd0c9; --acc2:#7aa2ff;
+    --ok:#43d17a; --bad:#ff6b6b; --warn:#ffc861;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:15px/1.55 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+  .wrap{max-width:1060px;margin:0 auto;padding:32px 20px 80px}
+  header.hero{border:1px solid var(--line);border-radius:14px;
+    background:linear-gradient(160deg,#142033,#0d1320);padding:28px 30px;margin-bottom:22px}
+  .kicker{color:var(--acc);font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:12px}
+  h1{margin:6px 0 8px;font-size:30px;line-height:1.15}
+  h2{margin:34px 0 14px;font-size:21px;border-left:3px solid var(--acc);padding-left:11px}
+  h3{margin:18px 0 8px;font-size:16px;color:var(--acc2)}
+  p{color:var(--ink)} .mut{color:var(--mut)}
+  .row{display:flex;flex-wrap:wrap;gap:14px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+  .grow{flex:1 1 220px}
+  .pill{display:inline-block;font-size:12px;padding:3px 9px;border-radius:999px;
+    border:1px solid var(--line);background:var(--panel2);color:var(--mut);margin:2px 4px 2px 0}
+  .pill.ok{color:var(--ok);border-color:#1f5e3a}
+  .pill.acc{color:var(--acc);border-color:#1f5e5a}
+  table{width:100%;border-collapse:collapse;margin:8px 0;font-size:14px}
+  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+  th{background:var(--panel2);color:var(--acc2);font-weight:600}
+  tr:nth-child(even) td{background:#0e1521}
+  code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  pre{background:#0a0e16;border:1px solid var(--line);border-radius:10px;
+    padding:14px 16px;overflow:auto;color:#cfe;font-size:13px;line-height:1.45}
+  .lead{font-size:17px}
+  .tag-ok{color:var(--ok);font-weight:700}
+  .tag-bad{color:var(--bad);font-weight:700}
+  .tag-warn{color:var(--warn);font-weight:700}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:760px){.grid2{grid-template-columns:1fr}}
+  .copybtn{background:var(--acc);color:#04201e;border:0;border-radius:8px;
+    padding:9px 14px;font-weight:700;cursor:pointer}
+  .copybtn:hover{filter:brightness(1.08)}
+  .foot{margin-top:40px;border-top:1px solid var(--line);padding-top:16px;color:var(--mut);font-size:13px}
+  .num{font-variant-numeric:tabular-nums}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <div class="kicker">Stellar Hacks: Real-World ZK &middot; Implementation Plan</div>
+  <h1>Stellaris — ZK Proof-of-Reserves on Stellar</h1>
+  <p class="lead mut">An issuer proves on-chain that <code>sum(reserves) &ge; liabilities</code>
+  without revealing any account balance. A Soroban contract verifies the Groth16
+  proof and records a non-replayable &ldquo;Solvent as of ledger N&rdquo; attestation.</p>
+  <div style="margin-top:10px">
+    <span class="pill acc">Circom + Groth16</span>
+    <span class="pill acc">Soroban verifier</span>
+    <span class="pill ok">ZK load-bearing</span>
+    <span class="pill">~7-day window</span>
+    <span class="pill">$10k pool / 5 places</span>
+    <span class="pill">Deadline 2026-06-29</span>
+  </div>
+</header>
+
+<div class="row">
+  <div class="card grow">
+    <h3 style="margin-top:0">Why this wins</h3>
+    <p class="mut">Best feasibility-to-differentiation ratio for a 7-day build:
+    a single circuit + the official verifier, ZK that can&rsquo;t be removed,
+    chain-native demand (issuers are Stellar&rsquo;s real customers), and a
+    field thin on finished proof-of-reserves projects.</p>
+  </div>
+  <div class="card grow">
+    <h3 style="margin-top:0">The gate it passes</h3>
+    <p class="mut">Delete the proof and the product is a trust-me PDF. The
+    contract refuses to record solvency unless a valid Groth16 proof verifies
+    on-chain via BLS12-381 pairing host functions. The proof <em>is</em> the trust primitive.</p>
+  </div>
+  <div class="card grow">
+    <h3 style="margin-top:0">The 15-second differentiator</h3>
+    <p class="mut">On camera, lower a balance below liabilities: the proof still
+    generates, but the contract <span class="tag-bad">rejects</span> with
+    <code>NotSolvent</code>. That is the most convincing proof that the ZK is real.</p>
+  </div>
+</div>
+
+<h2>Architecture</h2>
+<pre>
+  CLIENT (browser, secrets local)            STELLAR TESTNET (Soroban)
+  -------------------------------            -------------------------
+  reserve balances r_1..r_n (private)
+  liabilities L (public)
+        |
+        v
+  snarkjs / wasm prover  -- Groth16 proof + public signals -->  Stellaris contract
+        |                                                          |
+   Poseidon commitment C (public)                                  | 1. groth16_verify(vk, proof, signals)
+                                                                   | 2. assert solvent == 1
+                                                                   | 3. assert period not attested (anti-replay)
+                                                                   | 4. store Attestation{C,L,solvent,ts,period}
+                                                                   v
+                                                          "Solvent as of ledger N"
+
+  public signals (LOCKED order) = [ solvent(0/1), C_commitment, L_liabilities, period_id ]
+</pre>
+<p class="mut">The public-signal order is verification-critical and is the single
+source of truth shared by <code>por.circom</code>, <code>types.rs</code>, and
+<code>prove.ts</code>. Drift here is the number-one integration footgun.</p>
+
+<h2>Build phases (build-first / test-soon)</h2>
+<table>
+  <tr><th>Phase</th><th>Deliverable</th><th>Exit criteria</th></tr>
+  <tr><td>P0 Integration spike</td><td>Clone official groth16_verifier; deploy testnet</td><td>Tutorial <code>a*b=c</code> proof verifies <span class="tag-ok">TRUE</span> on our deploy</td></tr>
+  <tr><td>P1 Circuit</td><td>por.circom + range/sum/commit subcircuits</td><td>snarkjs verify OK (solvent); <span class="tag-bad">FAILS</span> (insolvent)</td></tr>
+  <tr><td>P2 Setup</td><td>ceremony.sh, export-vk.sh</td><td>vk + proof exported in contract-ready hex</td></tr>
+  <tr><td>P3 Contract</td><td>stellaris/src/*</td><td>Unit tests: verify-true, verify-false, replay-reject</td></tr>
+  <tr><td>P4 Wire</td><td>prove.ts + stellar.ts</td><td>Client-side proof records attestation on testnet</td></tr>
+  <tr><td>P5 Insolvent + nullifier</td><td>contract + client</td><td>Insolvent rejected; period replay rejected</td></tr>
+  <tr><td>P6 Polish</td><td>UI, README, AGENTS, video</td><td>2-3 min demo recorded; limits documented</td></tr>
+  <tr><td>P7 Buffer</td><td>—</td><td>Resubmit-ready; testnet flake absorbed</td></tr>
+</table>
+<p class="mut"><strong>Dependency:</strong> P0 before P1. Lock verification against
+the real official contract first; the circuit&rsquo;s public-signal layout must
+match what the verifier expects. Confirm signatures against the cloned repo, not memory.</p>
+
+<h2>Risk matrix</h2>
+<table>
+  <tr><th>Risk</th><th>Likelihood</th><th>Mitigation</th></tr>
+  <tr><td>Public-signal ordering mismatch contract&harr;circuit</td><td class="tag-warn">Med-High</td><td>Lock 4-signal array in P0; shared constant in types.rs + prove.ts</td></tr>
+  <tr><td>Proof byte-encoding mismatch</td><td class="tag-warn">Med-High</td><td>Single shared converter for export-vk.sh + toContractArgs; locked in P0</td></tr>
+  <tr><td>Testnet RPC flake during judging</td><td class="tag-warn">Med</td><td>Required demo video = backup; mock-client toggle; local snarkjs verify</td></tr>
+  <tr><td>Trusted setup read as production</td><td>Low</td><td>Loud README + script comments: DEMO single-contributor</td></tr>
+  <tr><td>Looks like privacy-pool fork</td><td>Low</td><td>Distinct category: issuer attestation, no notes/transfers</td></tr>
+</table>
+
+<h2>Idea field (why Stellaris over the others)</h2>
+<table>
+  <tr><th>#</th><th>Idea</th><th>Wedge /9</th><th>Moat /20</th><th>7-day feasibility</th><th>Crowding</th></tr>
+  <tr><td>1</td><td><strong>Stellaris</strong> (proof-of-reserves)</td><td class="num">7</td><td class="num">13</td><td class="tag-ok">HIGH</td><td class="tag-ok">Low</td></tr>
+  <tr><td>2</td><td>Clearpath (selective disclosure)</td><td class="num">6</td><td class="num">16</td><td class="tag-warn">MED</td><td class="tag-warn">Med</td></tr>
+  <tr><td>3</td><td>Provenance (RISC Zero)</td><td class="num">6</td><td class="num">12</td><td class="tag-warn">MED</td><td class="tag-ok">Low</td></tr>
+  <tr><td>4</td><td>GateProof (eligibility) — fallback</td><td class="num">7</td><td class="num">9</td><td class="tag-ok">HIGH</td><td class="tag-warn">Med-High</td></tr>
+</table>
+<p class="mut">Clearpath has the highest moat but the highest delivery risk and
+resembles the crowded fork. GateProof is the safe fallback if P0 fails — same
+verifier path, simpler Merkle-membership circuit.</p>
+
+<h2>Honest limitation (stated everywhere)</h2>
+<div class="card">
+<p>The proof binds the <strong>arithmetic and non-negativity</strong> of the
+committed reserve vector — <em>not</em> the truthfulness of the issuer&rsquo;s raw
+balance inputs. Binding raw balances to reality needs a custodian/exchange oracle,
+explicitly out of scope. Everything here is a <strong>research prototype, not
+audited.</strong> This is the standard, well-understood boundary of every
+proof-of-reserves system; stating it plainly builds trust with judges.</p>
+</div>
+
+<h2>Copy / export — build kickoff prompt</h2>
+<p class="mut">Paste this to start the implement phase once the toolchain is installed.</p>
+<pre id="kick">/rpi existing /home/harry-riddle/dev/github.com/stellar Start P0 of the Stellaris plan in docs/plan/. Clone stellar/soroban-examples groth16_verifier, deploy to testnet, and verify the tutorial a*b=c proof returns TRUE via our deploy BEFORE writing any circuit. Lock the public-signal order [solvent, C, L, period_id] and the proof byte encoding against the real verifier. Then proceed phase by phase per docs/plan/00-RPD-OVERVIEW.md. Build-first/test-soon, pure-ASCII demo output, expose all raw output, confirm each install command first.</pre>
+<button class="copybtn" onclick="(function(){var t=document.getElementById('kick').innerText;navigator.clipboard&&navigator.clipboard.writeText(t);var b=event.target;var o=b.innerText;b.innerText='Copied';setTimeout(function(){b.innerText=o},1200);})()">Copy kickoff prompt</button>
+
+<div class="foot">
+  <strong>Artifact:</strong> Stellaris plan companion v1.0 &middot; generated 2026-06-22.
+  Source docs: <code>docs/research/*</code> (decision) &middot; <code>docs/plan/*</code> (RPD) &middot;
+  <code>docs/strategy/*</code> (judge Q&amp;A, feasibility, demo script).
+  Status: Research + Plan complete; awaiting toolchain + plan sign-off before Implement.
+</div>
+
+</div>
+</body>
+</html>

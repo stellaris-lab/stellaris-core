@@ -1,0 +1,44 @@
+[package]
+name = "stellaris-mint-guard"
+version = "0.1.0"
+edition = "2021"
+publish = false
+rust-version = "1.89.0"
+description = "Stellaris SolvencyGatedToken: a SEP-41-shaped token whose mint is gated by a fresh, solvent Stellaris attestation (Sprint A wedge)."
+
+# Standalone deployable guard contract. It performs a cross-contract READ of the
+# attestation contract's `get_attestation_v3` via a `contractimport!`-generated
+# client (see src/lib.rs). The attestation WASM must be built FIRST:
+#   (cd ../stellaris && cargo build --release --target wasm32v1-none)
+# then this crate:
+#   cargo build --release --target wasm32v1-none
+# This crate emits ONLY the guard's entrypoints, so there is no `init` symbol
+# collision with the attestation contract — the packaging issue that forced the
+# guard to be #[cfg(test)]-only inside the attestation crate is resolved by this
+# split. The real-proof end-to-end test still lives in the attestation crate
+# (stellaris/src/test_mint_guard.rs, 60/60 host-target) where the v3 fixtures are
+# reachable; this crate's job is the independently deployable artifact.
+
+[lib]
+crate-type = ["cdylib"]
+doctest = false
+
+[dependencies]
+soroban-sdk = { version = "25.1.0" }
+
+[dev-dependencies]
+soroban-sdk = { version = "25.1.0", features = ["testutils"] }
+
+[profile.release]
+opt-level = "z"
+overflow-checks = true
+debug = 0
+strip = "symbols"
+debug-assertions = false
+panic = "abort"
+codegen-units = 1
+lto = true
+
+[profile.release-with-logs]
+inherits = "release"
+debug-assertions = true

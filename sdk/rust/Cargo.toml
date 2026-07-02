@@ -1,0 +1,15 @@
+[package]
+name = "stellaris-sdk"
+version = "0.1.0"
+edition = "2021"
+description = "Rust SDK primitives for the Stellaris proof-of-reserves protocol"
+license = "MIT OR Apache-2.0"
+include = ["Cargo.toml", "src/**", "test-vectors/**"]
+
+[lib]
+name = "stellaris_sdk"
+path = "src/lib.rs"
+
+[dev-dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"

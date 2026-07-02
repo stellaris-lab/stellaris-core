@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "fieldEncoding": "decimal-string",
+  "versions": {
+    "v1": {
+      "description": "Base proof-of-reserves solvency statement.",
+      "count": 4,
+      "order": [
+        { "index": 0, "name": "solvent", "type": "bool01" },
+        { "index": 1, "name": "commitment", "type": "field" },
+        { "index": 2, "name": "liabilities", "type": "u64_decimal" },
+        { "index": 3, "name": "periodId", "type": "u64_decimal" }
+      ]
+    },
+    "v2": {
+      "description": "Proof-of-reserves with SNARK-proven liability tree total.",
+      "count": 5,
+      "order": [
+        { "index": 0, "name": "solvent", "type": "bool01" },
+        { "index": 1, "name": "reserveCommitment", "type": "field" },
+        { "index": 2, "name": "liabRoot", "type": "field" },
+        { "index": 3, "name": "liabTotal", "type": "u64_decimal" },
+        { "index": 4, "name": "periodId", "type": "u64_decimal" }
+      ]
+    },
+    "v3": {
+      "description": "Multi-asset solvency with price commitment and per-asset flags.",
+      "count": 8,
+      "nAssets": 4,
+      "order": [
+        { "index": 0, "name": "aggregateSolvent", "type": "bool01" },
+        { "index": 1, "name": "reserveCommitment", "type": "field" },
+        { "index": 2, "name": "priceCommitment", "type": "field" },
+        { "index": 3, "name": "assetSolvent[0]", "type": "bool01" },
+        { "index": 4, "name": "assetSolvent[1]", "type": "bool01" },
+        { "index": 5, "name": "assetSolvent[2]", "type": "bool01" },
+        { "index": 6, "name": "assetSolvent[3]", "type": "bool01" },
+        { "index": 7, "name": "periodId", "type": "u64_decimal" }
+      ]
+    }
+  }
+}

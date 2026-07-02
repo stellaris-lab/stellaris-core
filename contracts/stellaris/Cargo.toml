@@ -1,0 +1,45 @@
+[package]
+name = "stellaris-contract"
+version = "0.1.0"
+edition = "2021"
+publish = false
+rust-version = "1.89.0"
+description = "Stellaris ZK Proof-of-Reserves contract for Stellar/Soroban"
+
+[lib]
+crate-type = ["cdylib"]
+doctest = false
+
+# NOTE: the solvency-gated token (Sprint A wedge) lives in this crate ONLY for a
+# real-proof end-to-end host test (see src/mint_guard.rs + src/test_mint_guard.rs,
+# both `#[cfg(test)]`). It is a SEPARATE deployable contract and is intentionally
+# NOT exposed as a cargo feature: two `#[contract]` types in one crate export
+# colliding bare entrypoint symbols (`init`) on wasm32v1-none, and the guard
+# depends on the attestation's generated client type, so a standalone guard WASM
+# requires a true crate split (deferred to the user-gated testnet sprint), not a
+# feature flag. The default WASM build below therefore emits the attestation
+# contract only, with no symbol collision.
+
+[dependencies]
+soroban-sdk = { version = "25.1.0" }
+
+[dev-dependencies]
+soroban-sdk = { version = "25.1.0", features = ["testutils"] }
+ark-bls12-381 = { version = "0.4.0" }
+ark-serialize = { version = "0.4.2" }
+ark-ff = { version = "0.4.2" }
+ark-ec = { version = "0.4.2" }
+
+[profile.release]
+opt-level = "z"
+overflow-checks = true
+debug = 0
+strip = "symbols"
+debug-assertions = false
+panic = "abort"
+codegen-units = 1
+lto = true
+
+[profile.release-with-logs]
+inherits = "release"
+debug-assertions = true

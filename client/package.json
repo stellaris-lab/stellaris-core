@@ -1,0 +1,50 @@
+{
+  "name": "@stellaris/por-sdk",
+  "version": "0.1.0",
+  "description": "Stellaris proof-of-reserves SDK: circuits, proving, contract encoding, and Soroban client abstractions",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "package.json"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "lint": "tsc -p tsconfig.json --noEmit",
+    "test": "npm run build && node --test \"test/*.test.ts\"",
+    "check": "npm run lint && npm test",
+    "prepack": "npm run build"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "stellar",
+    "soroban",
+    "proof-of-reserves",
+    "rwa",
+    "stablecoin",
+    "zk",
+    "groth16"
+  ],
+  "license": "MIT OR Apache-2.0",
+  "dependencies": {
+    "@stellar/stellar-sdk": "^13.1.0",
+    "snarkjs": "^0.7.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "typescript": "^5.5.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
