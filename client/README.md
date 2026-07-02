@@ -1,4 +1,4 @@
-# @stellaris/por-sdk
+# @stellaris-lab/por-sdk
 
 TypeScript/JavaScript SDK for Stellaris proof-of-reserves and solvency-gated minting flows on Stellar Soroban.
 
@@ -7,7 +7,7 @@ The SDK provides deterministic protocol utilities, local proof verification help
 ## Install
 
 ```bash
-npm install @stellaris/por-sdk
+npm install @stellaris-lab/por-sdk
 ```
 
 ## Requirements
@@ -19,7 +19,7 @@ npm install @stellaris/por-sdk
 ## Public Signal Parsing
 
 ```ts
-import { parsePublicSignalsV3, encodePublicSignalsV3 } from "@stellaris/por-sdk";
+import { parsePublicSignalsV3, encodePublicSignalsV3 } from "@stellaris-lab/por-sdk";
 
 const signals = [
   "1",
@@ -39,7 +39,7 @@ const encoded = encodePublicSignalsV3(parsed);
 ## Local Proof Verification
 
 ```ts
-import { verifyLocal } from "@stellaris/por-sdk";
+import { verifyLocal } from "@stellaris-lab/por-sdk";
 
 const ok = await verifyLocal(verificationKey, proofBundle);
 ```

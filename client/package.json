@@ -1,5 +1,5 @@
 {
-  "name": "@stellaris/por-sdk",
+  "name": "@stellaris-lab/por-sdk",
   "version": "0.1.0",
   "description": "Stellaris proof-of-reserves SDK: circuits, proving, contract encoding, and Soroban client abstractions",
   "type": "module",
