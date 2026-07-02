@@ -1,5 +1,5 @@
 /**
- * prove-check.mjs — End-to-end REAL proving self-test for @stellaris/por-sdk.
+ * prove-check.mjs — End-to-end REAL proving self-test for @stellaris-lab/por-sdk.
  *
  * Exercises the actual SDK proving path against the real circuit artifacts
  * produced by setup/ceremony.sh + setup/export-fixtures.sh:

@@ -7,7 +7,7 @@
  * the verification key + proof into the EXACT on-chain byte layout.
  *
  * Rather than reimplement that, this script imports the byte-exact serializers
- * straight from the core SDK's built `encoding.js` (`@stellaris/por-sdk`). That
+ * straight from the core SDK's built `encoding.js` (`@stellaris-lab/por-sdk`). That
  * module is the SINGLE source of truth for the on-chain byte layout (G1 96B,
  * G2 192B with the c1||c0 Fp2 swap, U256 32B) and is byte-for-byte verified
  * against the Rust on-chain ground truth in the apps test-suite ("BLS12-381

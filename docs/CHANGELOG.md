@@ -419,7 +419,7 @@ Format loosely follows Keep a Changelog. Dates are UTC.
 
 ### Fixed: proof-encoding split-brain — single shared converter now in SDK core
 - The byte-exact BLS12-381 serializer is now `client/src/encoding.ts` in the SDK
-  core (`@stellaris/por-sdk`), the single shared converter invariant #2 requires.
+  core (`@stellaris-lab/por-sdk`), the single shared converter invariant #2 requires.
   `codec.ts` gains `bundleToContractBytes` (G1 96B / G2 192B / U256 32B).
 - `stellar.ts#attest` previously emitted decimal `{a,b,c}` tuples that the
   transport's contract codec (which expected the snarkjs `{pi_a,pi_b,pi_c}` shape)

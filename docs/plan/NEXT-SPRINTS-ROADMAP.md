@@ -622,7 +622,7 @@ Acceptance criteria:
 ### User Inputs Needed
 
 - Confirm package names:
-  - `@stellaris/por-sdk`,
+  - `@stellaris-lab/por-sdk`,
   - `@stellaris-apps/*`.
 - Confirm whether packages will be published to npm or kept local.
 

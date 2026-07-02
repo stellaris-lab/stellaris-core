@@ -24,7 +24,7 @@ The following are built and verified (see CHANGELOG):
   `setup/export-fixtures.sh`, `fixtures/`). snarkjs-verified.
 - Soroban contract verifying REAL proofs through the on-chain BLS12-381 pairing
   check (`contracts/stellaris`, `cargo test` 11/11). No mock VK.
-- TS SDK (`@stellaris/por-sdk`) with the single shared byte-exact encoder
+- TS SDK (`@stellaris-lab/por-sdk`) with the single shared byte-exact encoder
   (`client/src/encoding.ts`) — G1 96B, G2 192B (`c1||c0` Fp2 order), U256 32B —
   matching the on-chain layout byte-for-byte and the CAP-0059 spec.
 - Integration layers + example apps in `stellaris-apps` (transport, signer,

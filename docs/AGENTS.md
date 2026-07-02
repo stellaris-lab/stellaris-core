@@ -13,7 +13,7 @@ Full rationale: `docs/research/04-RECOMMENDATION.md`.
 Research COMPLETE. Implement IN PROGRESS — core protocol, SDK, docs website, and
 integration workspace are active:
 - `stellaris-core/` holds the protocol: Circom circuits, Soroban contract, fixtures,
-  and the `@stellaris/por-sdk` TypeScript SDK.
+  and the `@stellaris-lab/por-sdk` TypeScript SDK.
 - `stellaris/` is the Fumadocs/Next.js documentation and product landing website.
 - `stellaris-apps/` is the integration showcase monorepo: Soroban transport,
   keypair signer, manifest loader, attestation service, registry indexer, and
@@ -43,7 +43,7 @@ step checklist.
    output wins.
 2. Proof/VK byte encoding must match the on-chain verifier exactly. The SINGLE
    authoritative serializer lives in the SDK core: `client/src/encoding.ts`
-   (exported via `@stellaris/por-sdk`, re-exported through `@stellaris-apps/
+   (exported via `@stellaris-lab/por-sdk`, re-exported through `@stellaris-apps/
    common`). G1 = 96B `X(48)||Y(48)` big-endian; G2 = 192B with each Fp2 written
    `c1||c0` (high coefficient first — snarkjs `[c0,c1]` is SWAPPED); U256 signals
    = 32B big-endian. Locked by `client/scripts/encoding-check.mjs` (byte-for-byte
