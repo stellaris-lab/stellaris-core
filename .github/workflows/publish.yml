@@ -2,6 +2,15 @@ name: Publish TS SDK
 
 on:
   workflow_dispatch:
+    inputs:
+      publish:
+        description: "Publish package to npm. Leave false to test checks and npm authentication only."
+        required: true
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
   release:
     types:
       - published
@@ -39,7 +48,13 @@ jobs:
       - name: Verify package contents
         run: npm pack --dry-run
 
+      - name: Verify npm authentication
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm whoami
+
       - name: Publish to npm with provenance
+        if: github.event_name == 'release' || github.event.inputs.publish == 'true'
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npm publish --access public --provenance
