@@ -10,12 +10,19 @@ export class BindingSorobanTransport {
         this.invoker = options.invoker;
         this.maxAttempts = options.maxAttempts ?? 3;
         this.baseDelayMs = options.baseDelayMs ?? 250;
+        if (!Number.isInteger(this.maxAttempts) || this.maxAttempts < 1) {
+            throw StellarisError.configuration("maxAttempts must be a positive integer");
+        }
+        if (!Number.isFinite(this.baseDelayMs) || this.baseDelayMs < 0) {
+            throw StellarisError.configuration("baseDelayMs must be a non-negative finite number");
+        }
         this.retryable = options.retryable ?? defaultRetryable;
     }
     async invoke(plan, signer) {
         this.validatePlan(plan, "write");
         const request = this.toRequest(plan, signer?.publicKey);
-        const response = await this.withRetry(plan, () => this.invoker.invoke(request, signer));
+        const action = () => this.invoker.invoke(request, signer);
+        const response = plan.idempotencyKey === undefined ? await action() : await this.withRetry(plan, action);
         return normalizeTransactionResult(response);
     }
     async simulate(plan) {
