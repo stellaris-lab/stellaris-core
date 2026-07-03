@@ -42,7 +42,7 @@ export class Groth16Backend {
             assertVerificationKeyShape(artifacts.verificationKey);
         }
         try {
-            const snarkjs = await import("snarkjs");
+            const snarkjs = await loadSnarkJs();
             const { proof, publicSignals } = await snarkjs.groth16.fullProve(witnessInput, artifacts.wasmUrl, artifacts.zkeyUrl);
             const parsed = parsePublicSignals(publicSignals);
             return {
@@ -60,7 +60,7 @@ export class Groth16Backend {
     }
     async verify(verificationKey, bundle) {
         try {
-            const snarkjs = await import("snarkjs");
+            const snarkjs = await loadSnarkJs();
             return await snarkjs.groth16.verify(verificationKey, bundle.publicSignals, bundle.proof);
         }
         catch (cause) {
@@ -89,3 +89,11 @@ export function backendFor(version) {
 }
 /** The default backend the SDK uses when no explicit backend is requested. */
 export const DEFAULT_PROVING_BACKEND = new Groth16Backend();
+async function loadSnarkJs() {
+    try {
+        return await import("snarkjs");
+    }
+    catch (cause) {
+        throw StellarisError.configuration("local proving requires optional peer dependency snarkjs; install it with `npm install snarkjs`", { context: { cause: cause instanceof Error ? cause.message : String(cause) } });
+    }
+}

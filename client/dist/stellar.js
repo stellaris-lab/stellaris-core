@@ -5,7 +5,7 @@
  * UI or demo mocks. Integrators can supply a real SorobanTransport backed by
  * @stellar/stellar-sdk, a server signer, or a test harness.
  */
-import { bundleToContractArgs, decodeAttestation, decodeAttestationV2, decodeAttestationV3, } from "./codec.js";
+import { assertBundleV2Consistency, assertBundleV3Consistency, bundleToContractArgs, decodeAttestation, decodeAttestationV2, decodeAttestationV3, } from "./codec.js";
 import { StellarisError } from "./errors.js";
 import { UnconfiguredSorobanTransport } from "./transport.js";
 export var ContractErrorCode;
@@ -97,6 +97,7 @@ export class StellarisClient {
      */
     async attestV2(params) {
         this.assertSigner(params.issuer, params.signer);
+        assertBundleV2Consistency(params.bundle);
         const plan = this.plan("attest_v2", [
             params.issuer,
             params.bundle.proof,
@@ -125,6 +126,7 @@ export class StellarisClient {
      */
     async attestV3(params) {
         this.assertSigner(params.issuer, params.signer);
+        assertBundleV3Consistency(params.bundle);
         const plan = this.plan("attest_v3", [
             params.issuer,
             params.bundle.proof,
@@ -213,6 +215,7 @@ export class StellarisClient {
      */
     async attestV3Signed(params) {
         this.assertSigner(params.issuer, params.signer);
+        assertBundleV3Consistency(params.bundle);
         const plan = this.plan("attest_v3_signed", [
             params.issuer,
             params.bundle.proof,

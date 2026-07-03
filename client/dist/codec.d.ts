@@ -4,7 +4,7 @@
  * Keep all low-level proof/public-signal encoding in one module. When Stellar SDK
  * exposes first-class BLS12-381 XDR helpers, only this file should change.
  */
-import { Attestation, AttestationV2, AttestationV3, ProofBundle, SnarkJsGroth16Proof } from "./domain.js";
+import { Attestation, AttestationV2, AttestationV3, ProofBundle, ProofBundleV2, ProofBundleV3, SnarkJsGroth16Proof } from "./domain.js";
 import { ContractProofBytes } from "./encoding.js";
 export interface ContractProofArgs {
     readonly a: readonly [string, string];
@@ -35,6 +35,8 @@ export declare function bundleToContractArgs(bundle: ProofBundle): ContractAttes
  * wrap these in ScVal (ScBytes / ScU256) — no field math at the transport layer.
  */
 export declare function bundleToContractBytes(bundle: ProofBundle): ContractAttestBytes;
+export declare function assertBundleV2Consistency(bundle: ProofBundleV2): void;
+export declare function assertBundleV3Consistency(bundle: ProofBundleV3): void;
 export declare function decodeAttestation(raw: unknown): Attestation;
 /**
  * Decode a v2 attestation (solvency with SNARK-proven liabilities). `liabRoot`

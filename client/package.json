@@ -46,11 +46,19 @@
   ],
   "license": "MIT OR Apache-2.0",
   "dependencies": {
-    "@stellar/stellar-sdk": "^13.1.0",
+    "@stellar/stellar-sdk": "^13.1.0"
+  },
+  "peerDependencies": {
     "snarkjs": "^0.7.5"
+  },
+  "peerDependenciesMeta": {
+    "snarkjs": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@types/node": "^20.11.0",
+    "snarkjs": "^0.7.5",
     "typescript": "^5.5.0"
   },
   "engines": {

@@ -7,6 +7,8 @@
  */
 
 import {
+  assertBundleV2Consistency,
+  assertBundleV3Consistency,
   bundleToContractArgs,
   decodeAttestation,
   decodeAttestationV2,
@@ -157,6 +159,7 @@ export class StellarisClient {
    */
   async attestV2(params: AttestV2Params): Promise<AttestationReceiptV2> {
     this.assertSigner(params.issuer, params.signer);
+    assertBundleV2Consistency(params.bundle);
     const plan = this.plan("attest_v2", [
       params.issuer,
       params.bundle.proof,
@@ -188,6 +191,7 @@ export class StellarisClient {
    */
   async attestV3(params: AttestV3Params): Promise<AttestationReceiptV3> {
     this.assertSigner(params.issuer, params.signer);
+    assertBundleV3Consistency(params.bundle);
     const plan = this.plan("attest_v3", [
       params.issuer,
       params.bundle.proof,
@@ -307,6 +311,7 @@ export class StellarisClient {
     readonly signer: TransactionSigner;
   }): Promise<AttestationReceiptV3> {
     this.assertSigner(params.issuer, params.signer);
+    assertBundleV3Consistency(params.bundle);
     const plan = this.plan("attest_v3_signed", [
       params.issuer,
       params.bundle.proof,

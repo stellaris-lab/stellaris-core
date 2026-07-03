@@ -6,7 +6,7 @@
  */
 import { proofToBytes, signalToBytes, } from "./encoding.js";
 import { StellarisError } from "./errors.js";
-import { parsePublicSignals } from "./signals.js";
+import { parsePublicSignals, parsePublicSignalsV2, parsePublicSignalsV3 } from "./signals.js";
 export function proofToContractArgs(proof) {
     if (!Array.isArray(proof.pi_a) || !Array.isArray(proof.pi_b) || !Array.isArray(proof.pi_c)) {
         throw StellarisError.encoding("invalid snarkjs proof shape");
@@ -47,6 +47,29 @@ export function bundleToContractBytes(bundle) {
         publicSignals: bundle.publicSignals.map((s) => signalToBytes(s)),
     };
 }
+export function assertBundleV2Consistency(bundle) {
+    const parsed = parsePublicSignalsV2(bundle.publicSignals);
+    if (parsed.reserveCommitment !== bundle.parsed.reserveCommitment ||
+        parsed.liabRoot !== bundle.parsed.liabRoot ||
+        parsed.liabTotal !== bundle.parsed.liabTotal ||
+        parsed.periodId !== bundle.parsed.periodId ||
+        parsed.solvent !== bundle.parsed.solvent) {
+        throw StellarisError.encoding("v2 bundle parsed values differ from raw public signals");
+    }
+    proofToBytes(bundle.proof);
+}
+export function assertBundleV3Consistency(bundle) {
+    const parsed = parsePublicSignalsV3(bundle.publicSignals);
+    if (parsed.aggregateSolvent !== bundle.parsed.aggregateSolvent ||
+        parsed.reserveCommitment !== bundle.parsed.reserveCommitment ||
+        parsed.priceCommitment !== bundle.parsed.priceCommitment ||
+        parsed.periodId !== bundle.parsed.periodId ||
+        parsed.assetSolvent.length !== bundle.parsed.assetSolvent.length ||
+        parsed.assetSolvent.some((flag, index) => flag !== bundle.parsed.assetSolvent[index])) {
+        throw StellarisError.encoding("v3 bundle parsed values differ from raw public signals");
+    }
+    proofToBytes(bundle.proof);
+}
 export function decodeAttestation(raw) {
     if (!raw || typeof raw !== "object") {
         throw StellarisError.encoding("attestation response is not an object");
@@ -55,7 +78,7 @@ export function decodeAttestation(raw) {
     return {
         commitment: String(value.commitment),
         liabilities: BigInt(String(value.liabilities)),
-        solvent: Boolean(value.solvent),
+        solvent: decodeBoolean(value.solvent, "solvent"),
         ledgerTs: BigInt(String(value.ledgerTs ?? value.ledger_ts ?? 0)),
         periodId: BigInt(String(value.periodId ?? value.period_id)),
         issuer: String(value.issuer),
@@ -75,7 +98,7 @@ export function decodeAttestationV2(raw) {
         reserveCommitment: String(value.reserveCommitment ?? value.reserve_commitment),
         liabRoot: String(value.liabRoot ?? value.liab_root),
         liabTotal: BigInt(String(value.liabTotal ?? value.liab_total)),
-        solvent: Boolean(value.solvent),
+        solvent: decodeBoolean(value.solvent, "solvent"),
         ledgerTs: BigInt(String(value.ledgerTs ?? value.ledger_ts ?? 0)),
         periodId: BigInt(String(value.periodId ?? value.period_id)),
         issuer: String(value.issuer),
@@ -95,16 +118,34 @@ export function decodeAttestationV3(raw) {
     if (!Array.isArray(rawFlags)) {
         throw StellarisError.encoding("v3 assetSolvent is not an array");
     }
-    const assetSolvent = rawFlags.map((f) => Boolean(typeof f === "string" ? f === "1" || f === "true" : f));
+    const assetSolvent = rawFlags.map((flag, index) => decodeBoolean(flag, `assetSolvent[${index}]`));
     return {
-        aggregateSolvent: Boolean(value.aggregateSolvent ?? value.aggregate_solvent),
+        aggregateSolvent: decodeBoolean(value.aggregateSolvent ?? value.aggregate_solvent, "aggregateSolvent"),
         reserveCommitment: String(value.reserveCommitment ?? value.reserve_commitment),
         priceCommitment: String(value.priceCommitment ?? value.price_commitment),
         assetSolvent,
-        oracleBound: Boolean(value.oracleBound ?? value.oracle_bound),
-        custodianBound: Boolean(value.custodianBound ?? value.custodian_bound),
+        oracleBound: decodeBoolean(value.oracleBound ?? value.oracle_bound, "oracleBound"),
+        custodianBound: decodeBoolean(value.custodianBound ?? value.custodian_bound, "custodianBound"),
         ledgerTs: BigInt(String(value.ledgerTs ?? value.ledger_ts ?? 0)),
         periodId: BigInt(String(value.periodId ?? value.period_id)),
         issuer: String(value.issuer),
     };
+}
+function decodeBoolean(value, label) {
+    if (typeof value === "boolean") {
+        return value;
+    }
+    if (typeof value === "string") {
+        if (value === "true" || value === "1")
+            return true;
+        if (value === "false" || value === "0")
+            return false;
+    }
+    if (typeof value === "number") {
+        if (value === 1)
+            return true;
+        if (value === 0)
+            return false;
+    }
+    throw StellarisError.encoding(`${label} must be a boolean-like value`, { value });
 }
