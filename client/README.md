@@ -82,4 +82,4 @@ package.json
 
 ## Status
 
-Version `0.1.0` is a developer-preview SDK for audited testnet/demo flows. Production users should pin exact versions and verify deployed contract IDs, WASM hashes, circuit artifacts, and verification keys.
+Version `0.1.1` is a developer-preview SDK for audited testnet/demo flows. Production users should pin exact versions and verify deployed contract IDs, WASM hashes, circuit artifacts, and verification keys.

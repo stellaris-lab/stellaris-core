@@ -5,6 +5,7 @@ import {
   assertBundleV3Consistency,
   decodeAttestation,
   decodeAttestationV3,
+  proofToContractArgs,
 } from "../dist/codec.js";
 import { StellarisError } from "../dist/errors.js";
 import type { SnarkJsGroth16Proof } from "../dist/domain.js";
@@ -34,6 +35,20 @@ test("decodeAttestation rejects ambiguous boolean values", () => {
         commitment: "9",
         liabilities: "10",
         solvent: "nope",
+        period_id: "1",
+        issuer: "GISSUER",
+      }),
+    StellarisError,
+  );
+});
+
+
+test("decodeAttestation rejects missing required fields", () => {
+  assert.throws(
+    () =>
+      decodeAttestation({
+        commitment: "9",
+        solvent: true,
         period_id: "1",
         issuer: "GISSUER",
       }),
@@ -73,6 +88,17 @@ test("assertBundleV3Consistency rejects parsed/public-signal drift", () => {
           periodId: BigInt(9),
         },
       }),
+    StellarisError,
+  );
+});
+test("proofToContractArgs rejects incomplete proof coordinates", () => {
+  assert.throws(
+    () =>
+      proofToContractArgs({
+        pi_a: ["1"],
+        pi_b: [["3", "4"], ["5", "6"]],
+        pi_c: ["7", "8"],
+      } as unknown as SnarkJsGroth16Proof),
     StellarisError,
   );
 });

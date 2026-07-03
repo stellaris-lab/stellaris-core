@@ -56,6 +56,8 @@ export declare class StellarisClient {
     private readonly transport;
     constructor(options: StellarisClientOptions);
     init(params: InitParams): Promise<void>;
+    initV2(params: InitParams): Promise<void>;
+    initV3(params: InitParams): Promise<void>;
     attest(params: AttestParams): Promise<AttestationReceipt>;
     getAttestation(issuer: PublicKey, periodId: bigint): Promise<Attestation | null>;
     /**
@@ -75,6 +77,8 @@ export declare class StellarisClient {
     getAttestationV3(issuer: PublicKey, periodId: bigint): Promise<AttestationV3 | null>;
     listPeriods(issuer: PublicKey): Promise<readonly bigint[]>;
     getVerificationKey(): Promise<VerificationKeyDocument | null>;
+    getVerificationKeyV2(): Promise<VerificationKeyDocument | null>;
+    getVerificationKeyV3(): Promise<VerificationKeyDocument | null>;
     getAdmin(): Promise<PublicKey | null>;
     /**
      * Designate the price-oracle authority (admin-gated on-chain). `admin` must be

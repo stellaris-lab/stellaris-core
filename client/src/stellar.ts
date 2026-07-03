@@ -120,6 +120,18 @@ export class StellarisClient {
     await this.transport.invoke<void>(plan, params.signer);
   }
 
+  async initV2(params: InitParams): Promise<void> {
+    this.assertSigner(params.admin, params.signer);
+    const plan = this.plan("init_v2", [params.verificationKey]);
+    await this.transport.invoke<void>(plan, params.signer);
+  }
+
+  async initV3(params: InitParams): Promise<void> {
+    this.assertSigner(params.admin, params.signer);
+    const plan = this.plan("init_v3", [params.verificationKey]);
+    await this.transport.invoke<void>(plan, params.signer);
+  }
+
   async attest(params: AttestParams): Promise<AttestationReceipt> {
     this.assertSigner(params.issuer, params.signer);
     // Validate bundle consistency (commitment vs. public signals) before submit.
@@ -223,6 +235,16 @@ export class StellarisClient {
 
   async getVerificationKey(): Promise<VerificationKeyDocument | null> {
     const plan = this.plan("get_vk", []);
+    return this.transport.simulate<VerificationKeyDocument | null>(plan);
+  }
+
+  async getVerificationKeyV2(): Promise<VerificationKeyDocument | null> {
+    const plan = this.plan("get_vk_v2", []);
+    return this.transport.simulate<VerificationKeyDocument | null>(plan);
+  }
+
+  async getVerificationKeyV3(): Promise<VerificationKeyDocument | null> {
+    const plan = this.plan("get_vk_v3", []);
     return this.transport.simulate<VerificationKeyDocument | null>(plan);
   }
 
