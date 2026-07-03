@@ -4,6 +4,14 @@ TypeScript/JavaScript SDK for Stellaris proof-of-reserves and solvency-gated min
 
 The SDK provides deterministic protocol utilities, local proof verification helpers, public-signal parsing/encoding, and Soroban client abstractions for issuer, verifier, and operator applications.
 
+## Links
+
+- Repository: https://github.com/stellaris-lab/stellaris-core
+- SDK source: https://github.com/stellaris-lab/stellaris-core/tree/main/client
+- Integration examples: https://github.com/stellaris-lab/stellaris-apps
+- Documentation: https://github.com/stellaris-lab/stellaris
+- Issues: https://github.com/stellaris-lab/stellaris-core/issues
+
 ## Install
 
 ```bash

@@ -1,8 +1,17 @@
 {
   "name": "@stellaris-lab/por-sdk",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Stellaris proof-of-reserves SDK: circuits, proving, contract encoding, and Soroban client abstractions",
   "type": "module",
+  "homepage": "https://github.com/stellaris-lab/stellaris-core#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stellaris-lab/stellaris-core.git",
+    "directory": "client"
+  },
+  "bugs": {
+    "url": "https://github.com/stellaris-lab/stellaris-core/issues"
+  },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": {
